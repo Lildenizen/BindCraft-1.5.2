@@ -1,0 +1,35 @@
+###################################################
+# try first to create your own BindCraft conda enviroment by running
+conda env create -f environment.yml
+
+
+###################################################
+# if it fails, run installation manually as follows:
+
+# check conda version with: >nvidia-smi
+git clone https://github.com/martinpacesa/BindCraft.git
+bash install_bindcraft.sh --cuda '11.8' --pkg_manager 'conda'
+conda activate BindCraft
+pip install numpy
+pip install pandas
+pip install matplotlib
+pip install pyrosetta-installer
+python -c 'import pyrosetta_installer; pyrosetta_installer.install_pyrosetta()'
+pip install -U "jax[cuda12]"
+pip install biopython
+mkdir params/
+aria2c -q -x 16 https://storage.googleapis.com/alphafold/alphafold_params_2022-12-06.tar
+tar -xf alphafold_params_2022-12-06.tar -C params
+touch params/done.txt
+pip install git+https://github.com/sokrypton/ColabDesign.git
+###################################################
+###################################################
+
+# adjust design_path and starting_pdb paths
+'./settings_target/PDL1.json'
+
+# make DSSP executable
+chmod +x functions/dssp
+
+# run example
+python -u ./bindcraft.py --settings './settings_target/PDL1.json' --filters './settings_filters/default_filters.json' --advanced './settings_advanced/default_4stage_multimer.json'
